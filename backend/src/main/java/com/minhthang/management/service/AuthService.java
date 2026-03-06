@@ -119,6 +119,11 @@ public class AuthService {
         }
 
         User user = resetToken.getUser();
+
+        if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
+            return ApiResponse.error("Mật khẩu mới không được trùng mật khẩu cũ");
+        }
+
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
 
