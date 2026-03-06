@@ -71,13 +71,18 @@ export default function DashboardLayout({ title, children }) {
   }, [])
 
   useEffect(() => {
-    if (navRef.current) {
-      const activeEl = navRef.current.querySelector('[data-active="true"]')
-      if (activeEl) {
-        activeEl.scrollIntoView({ block: 'nearest' })
-      }
+    const saved = sessionStorage.getItem('sidebar-scroll')
+    if (navRef.current && saved) {
+      navRef.current.scrollTop = Number(saved)
     }
   }, [location.pathname])
+
+  const handleNavClick = () => {
+    if (navRef.current) {
+      sessionStorage.setItem('sidebar-scroll', navRef.current.scrollTop)
+    }
+    setOpen(false)
+  }
 
   const logout = () => {
     localStorage.removeItem('token'); localStorage.removeItem('user')
@@ -113,7 +118,7 @@ export default function DashboardLayout({ title, children }) {
                 <p className="px-3 mb-2 text-[10px] font-bold tracking-[0.15em] text-gray-400 uppercase">{s.title}</p>
                 <div className="space-y-0.5">
                   {visibleItems.map(item => (
-                    <Link key={item.path} to={item.path} onClick={() => setOpen(false)}
+                    <Link key={item.path} to={item.path} onClick={handleNavClick}
                       data-active={active(item.path) || undefined}
                       className={`flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium transition-all duration-200 ${
                         active(item.path)
